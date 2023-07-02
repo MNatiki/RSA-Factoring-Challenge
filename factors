@@ -20,3 +20,7 @@ def main():
             if factors:
                 p, q = factors
                 print(f"{number} = {p} * {q}")
+
+
+if __name__ == "__main__":
+    main()
