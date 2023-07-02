@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+import sys
+
+
+def factorize_number(n):
+    for i in range(2, n):
+        if (n % i) == 0:
+            return i, n // i
+    return None
+
+
+def main():
+    if len(sys.argv) < 2:
+        return
+    filename = sys.argv[1]
+    with open(filename, 'r') as fi:
+        for line in fi:
+            number = int(line.strip())
+            factors = factorize_number(number)
+            if factors:
+                p, q = factors
+                print(f"{number} = {p} * {q}")
