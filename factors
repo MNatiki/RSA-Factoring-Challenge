@@ -1,26 +1,75 @@
 #!/usr/bin/python3
 import sys
+import math
+import random
 
+def is_prime(n):
+    if n < 2:
+        return False
+    if n == 2 or n == 3:
+        return True
+    if n % 2 == 0:
+        return False
+    sqrt_n = int(math.sqrt(n)) + 1
+    for i in range(3, sqrt_n, 2):
+        if n % i == 0:
+            return False
+    return True
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def pollards_rho(n):
+    if n % 2 == 0:
+        return 2
+    x = random.randint(1, n - 1)
+    y = x
+    c = random.randint(1, n - 1)
+    d = 1
+    f = lambda x: (x**2 + c) % n
+
+    while d == 1:
+        x = f(x)
+        y = f(f(y))
+        d = gcd(abs(x - y), n)
+
+    return d
 
 def factorize_number(n):
-    for i in range(2, n):
-        if (n % i) == 0:
-            return i, n // i
-    return None
+    factors = []
+    while n > 1:
+        if is_prime(n):
+            factors.append(n)
+            break
+        d = pollards_rho(n)
+        factors.extend(factorize_number(d))
+        n //= d
+    return factors
 
+def format_factors(factors):
+    p = factors[0]
+    q = factors[1]
+    return f"{p}*{q}"
 
 def main():
     if len(sys.argv) < 2:
+        print("Please provide the filename as an argument.")
         return
+
     filename = sys.argv[1]
-    with open(filename, 'r') as fi:
-        for line in fi:
+
+    with open(filename, 'r') as file:
+        for line in file:
             number = int(line.strip())
             factors = factorize_number(number)
-            if factors:
-                p, q = factors
-                print(f"{number} = {p} * {q}")
-
+            if len(factors) == 1 and is_prime(number):
+                print(f"{number} is prime.")
+            else:
+                factorization = format_factors(factors)
+                print(f"{number} = {factorization}")
 
 if __name__ == "__main__":
     main()
+
